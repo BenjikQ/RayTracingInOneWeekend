@@ -1,0 +1,6 @@
+[requires]
+range-v3/0.12.0
+stb/cci.20220909
+
+[generators]
+CMakeDeps
