@@ -2,10 +2,15 @@
 #include <cstdint>
 #include <string_view>
 
+#include <indicators/cursor_control.hpp>
+#include <indicators/progress_bar.hpp>
+
 #include <range/v3/all.hpp>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb_image_write.h>
+
+using namespace indicators;
 
 int main() {
     constexpr std::int32_t image_width{ 256 };
@@ -22,6 +27,22 @@ int main() {
         return static_cast<std::uint8_t>(255.999 * value);
     };
 
+    show_console_cursor(false);
+
+    ProgressBar bar{
+        option::BarWidth{50},
+        option::Start{"["},
+        option::Fill{"="},
+        option::Lead{">"},
+        option::Remainder{" "},
+        option::End{"]"},
+        option::ForegroundColor{Color::green},
+        option::ShowElapsedTime{true},
+        option::ShowPercentage{true},
+        option::MaxProgress{image_height},
+        option::FontStyles{std::vector<FontStyle>{FontStyle::bold}}
+    };
+
     for (auto&& [row, col] : rng) {
         const auto r = convert(static_cast<double>(col) / (image_width - 1));
         const auto g = convert(static_cast<double>(image_height - row) / (image_height - 1));
@@ -30,10 +51,16 @@ int main() {
         pixels[pixel_size_in_bytes * (image_width * row + col)] = r;
         pixels[pixel_size_in_bytes * (image_width * row + col) + 1] = g;
         pixels[pixel_size_in_bytes * (image_width * row + col) + 2] = b;
+
+        if (col == 0) {
+            bar.tick();
+        }
     }
 
     stbi_write_png(image_path.data(), image_width, image_height,
                    pixel_size_in_bytes, pixels.data(), pixel_size_in_bytes * image_width);
+
+    show_console_cursor(true);
 
     return 0;
 }
