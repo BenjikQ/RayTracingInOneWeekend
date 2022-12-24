@@ -1,64 +1,56 @@
-#include <array>
 #include <cstdint>
-#include <string_view>
 
 #include <indicators/cursor_control.hpp>
 #include <indicators/progress_bar.hpp>
 
 #include <range/v3/all.hpp>
 
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include <stb_image_write.h>
+#include "image.hpp"
 
 using namespace indicators;
+
+[[nodiscard]] ProgressBar create_progress_bar(std::int32_t max_progress) noexcept {
+    return ProgressBar{
+        option::BarWidth{ 50 },
+        option::Start{ "[" },
+        option::Fill{ "=" },
+        option::Lead{ ">" },
+        option::Remainder{ " " },
+        option::End{ "]" },
+        option::ForegroundColor{ indicators::Color::green },
+        option::ShowElapsedTime{ true },
+        option::ShowPercentage{ true },
+        option::MaxProgress{ max_progress },
+        option::FontStyles{std::vector<FontStyle>{ FontStyle::bold } },
+    };
+}
 
 int main() {
     constexpr std::int32_t image_width{ 256 };
     constexpr std::int32_t image_height{ 256 };
-    constexpr std::string_view image_path{ "image.png" };
+
+    Image image{ image_width, image_height };
+
+    show_console_cursor(false);
+    auto bar = create_progress_bar(image_height);
 
     auto rows = ranges::view::iota(0, image_height);
     auto columns = ranges::view::iota(0, image_width);
     auto rng = ranges::view::cartesian_product(rows, columns);
 
-    constexpr std::int32_t pixel_size_in_bytes{ 3 };
-    std::array<std::uint8_t, image_height * image_width * pixel_size_in_bytes> pixels{};
-    auto convert = [](double value) {
-        return static_cast<std::uint8_t>(255.999 * value);
-    };
-
-    show_console_cursor(false);
-
-    ProgressBar bar{
-        option::BarWidth{50},
-        option::Start{"["},
-        option::Fill{"="},
-        option::Lead{">"},
-        option::Remainder{" "},
-        option::End{"]"},
-        option::ForegroundColor{Color::green},
-        option::ShowElapsedTime{true},
-        option::ShowPercentage{true},
-        option::MaxProgress{image_height},
-        option::FontStyles{std::vector<FontStyle>{FontStyle::bold}}
-    };
-
     for (auto&& [row, col] : rng) {
-        const auto r = convert(static_cast<double>(col) / (image_width - 1));
-        const auto g = convert(static_cast<double>(image_height - row) / (image_height - 1));
-        const auto b = convert(0.25);
+        const auto r = static_cast<double>(col) / (image_width - 1);
+        const auto g = static_cast<double>(image_height - row) / (image_height - 1);
+        const auto b = 0.2;
 
-        pixels[pixel_size_in_bytes * (image_width * row + col)] = r;
-        pixels[pixel_size_in_bytes * (image_width * row + col) + 1] = g;
-        pixels[pixel_size_in_bytes * (image_width * row + col) + 2] = b;
+        image.set_pixel(row, col, { r, g, b });
 
         if (col == 0) {
             bar.tick();
         }
     }
 
-    stbi_write_png(image_path.data(), image_width, image_height,
-                   pixel_size_in_bytes, pixels.data(), pixel_size_in_bytes * image_width);
+    image.save("image.png");
 
     show_console_cursor(true);
 
