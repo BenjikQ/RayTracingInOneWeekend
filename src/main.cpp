@@ -6,10 +6,12 @@
 #include <range/v3/all.hpp>
 
 #include "image.hpp"
+#include "ray.hpp"
+#include "vec3.hpp"
 
-using namespace indicators;
+[[nodiscard]] indicators::ProgressBar create_progress_bar(std::int32_t max_progress) noexcept {
+    using namespace indicators;
 
-[[nodiscard]] ProgressBar create_progress_bar(std::int32_t max_progress) noexcept {
     return ProgressBar{
         option::BarWidth{ 50 },
         option::Start{ "[" },
@@ -25,25 +27,42 @@ using namespace indicators;
     };
 }
 
+[[nodiscard]] Color ray_color(const Ray& ray) {
+    const Vec3 unit_direction{ normalized(ray.direction) };
+    auto t = 0.5 * (unit_direction.y + 1.0);
+    return (1.0 - t) * Color{ 1.0, 1.0, 1.0 } + t * Color{ 0.5, 0.7, 1.0 }; // linear interpolation
+}
+
 int main() {
-    constexpr std::int32_t image_width{ 256 };
-    constexpr std::int32_t image_height{ 256 };
+    constexpr double aspect_ratio{ 16.0 / 9 };
+    constexpr std::int32_t image_width{ 400 };
+    constexpr auto image_height = static_cast<std::int32_t>(image_width / aspect_ratio);
+
+    constexpr double viewport_height{ 2.0 };
+    constexpr double viewport_width{ aspect_ratio * viewport_height };
+    constexpr double focal_length{ 1.0 };
 
     Image image{ image_width, image_height };
 
-    show_console_cursor(false);
+    indicators::show_console_cursor(false);
     auto bar = create_progress_bar(image_height);
+
+    constexpr Point3 origin{};
+    constexpr Vec3 horizontal{ viewport_width, 0, 0 };
+    constexpr Vec3 vertical{ 0, viewport_height, 0 };
+    constexpr Point3 lower_left_corner{ origin - horizontal / 2 - vertical / 2 - Vec3{ 0, 0, focal_length } };
 
     auto rows = ranges::view::iota(0, image_height);
     auto columns = ranges::view::iota(0, image_width);
     auto rng = ranges::view::cartesian_product(rows, columns);
 
     for (auto&& [row, col] : rng) {
-        const auto r = static_cast<double>(col) / (image_width - 1);
-        const auto g = static_cast<double>(image_height - row) / (image_height - 1);
-        const auto b = 0.2;
+        const double u{ static_cast<double>(col) / (image_width - 1) };
+        const double v{ static_cast<double>(image_height - row) / (image_height - 1) };
+        const Ray ray{ origin, lower_left_corner + u * horizontal + v * vertical - origin };
+        const Color pixel_color{ ray_color(ray) };
 
-        image.set_pixel(row, col, { r, g, b });
+        image.set_pixel(row, col, pixel_color);
 
         if (col == 0) {
             bar.tick();
@@ -52,7 +71,7 @@ int main() {
 
     image.save("image.png");
 
-    show_console_cursor(true);
+    indicators::show_console_cursor(true);
 
     return 0;
 }
