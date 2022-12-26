@@ -68,6 +68,10 @@ struct Vec3 {
     return  v / v.length();
 }
 
+[[nodiscard]] constexpr double dot(const Vec3& lhs, const Vec3& rhs) noexcept {
+    return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z;
+}
+
 using Point3 = Vec3;
 using Color = Vec3;
 
