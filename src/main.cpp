@@ -1,4 +1,6 @@
+#include <cmath>
 #include <cstdint>
+#include <optional>
 
 #include <indicators/cursor_control.hpp>
 #include <indicators/progress_bar.hpp>
@@ -27,19 +29,24 @@
     };
 }
 
-[[nodiscard]] bool hit_sphere(const Point3& center, double radius, const Ray& ray) {
+[[nodiscard]] std::optional<double> hit_sphere(const Point3& center, double radius, const Ray& ray) {
     const Vec3 origin_to_center{ ray.origin - center };
     const auto a = dot(ray.direction, ray.direction);
     const auto b = 2 * dot(ray.direction, origin_to_center);
     const auto c = dot(origin_to_center, origin_to_center) - radius * radius;
     const auto discriminant = b * b - 4 * a * c;
-    return discriminant > 0;
+    if (discriminant < 0) {
+        return {};
+    }
+    return (-b - std::sqrt(discriminant)) / (2 * a);
 }
 
 [[nodiscard]] Color ray_color(const Ray& ray) {
-    if (hit_sphere(Point3{ 0, 0, -1 }, 0.5, ray)) {
-        return Color{ 1, 0, 0 };
+    if (auto t = hit_sphere(Point3{ 0, 0, -1 }, 0.5, ray)) {
+        const Vec3 sphere_normal{ normalized((ray.at(*t) - Vec3{ 0, 0, -1 })) };
+        return 0.5 * Color{ sphere_normal.x + 1, sphere_normal.y + 1, sphere_normal.z + 1 };
     }
+
     const Vec3 unit_direction{ normalized(ray.direction) };
     auto t = 0.5 * (unit_direction.y + 1.0);
     return (1.0 - t) * Color{ 1.0, 1.0, 1.0 } + t * Color{ 0.5, 0.7, 1.0 }; // linear interpolation
