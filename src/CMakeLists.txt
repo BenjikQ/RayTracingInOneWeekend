@@ -5,7 +5,10 @@ find_package(indicators)
 add_library(raytracer
   vec3.hpp vec3.cpp
   image.hpp image.cpp
-  ray.cpp ray.hpp)
+  ray.cpp ray.hpp
+  shape.cpp shape.hpp
+  sphere.cpp sphere.hpp
+  world.cpp world.hpp)
 target_link_libraries(raytracer
   PRIVATE
     stb::stb)

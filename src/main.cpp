@@ -1,6 +1,6 @@
-#include <cmath>
 #include <cstdint>
-#include <optional>
+#include <limits>
+#include <vector>
 
 #include <indicators/cursor_control.hpp>
 #include <indicators/progress_bar.hpp>
@@ -9,7 +9,9 @@
 
 #include "image.hpp"
 #include "ray.hpp"
+#include "sphere.hpp"
 #include "vec3.hpp"
+#include "world.hpp"
 
 [[nodiscard]] indicators::ProgressBar create_progress_bar(std::int32_t max_progress) noexcept {
     using namespace indicators;
@@ -29,22 +31,11 @@
     };
 }
 
-[[nodiscard]] std::optional<double> hit_sphere(const Point3& center, double radius, const Ray& ray) {
-    const Vec3 origin_to_center{ ray.origin - center };
-    const auto a = ray.direction.length_squared();
-    const auto half_b = dot(ray.direction, origin_to_center);
-    const auto c = origin_to_center.length_squared() - radius * radius;
-    const auto discriminant = half_b * half_b - a * c;
-    if (discriminant < 0) {
-        return {};
-    }
-    return (-half_b - std::sqrt(discriminant)) / a;
-}
+[[nodiscard]] Color ray_color(const Ray& ray, const World& world) {
+    static constexpr auto infinity = std::numeric_limits<double>::infinity();
 
-[[nodiscard]] Color ray_color(const Ray& ray) {
-    if (auto t = hit_sphere(Point3{ 0, 0, -1 }, 0.5, ray)) {
-        const Vec3 sphere_normal{ normalized((ray.at(*t) - Vec3{ 0, 0, -1 })) };
-        return 0.5 * Color{ sphere_normal.x + 1, sphere_normal.y + 1, sphere_normal.z + 1 };
+    if (auto hit = world.hit(ray, 0.0, infinity)) {
+        return 0.5 * (hit->normal + Color{ 1, 1, 1 });
     }
 
     const Vec3 unit_direction{ normalized(ray.direction) };
@@ -66,6 +57,11 @@ int main() {
     indicators::show_console_cursor(false);
     auto bar = create_progress_bar(image_height);
 
+    World world{
+        Sphere{ Point3{ 0, 0, -1 }, 0.5 },
+        Sphere{ Point3{ 0, -100.5, -1 }, 100.0 }
+    };
+
     constexpr Point3 origin{};
     constexpr Vec3 horizontal{ viewport_width, 0, 0 };
     constexpr Vec3 vertical{ 0, viewport_height, 0 };
@@ -81,7 +77,7 @@ int main() {
         const double u{ static_cast<double>(col) / (image_width - 1) };
         const double v{ static_cast<double>(image_height - row) / (image_height - 1) };
         const Ray ray{ origin, lower_left_corner + u * horizontal + v * vertical - origin };
-        const Color pixel_color{ ray_color(ray) };
+        const Color pixel_color{ ray_color(ray, world) };
 
         image.set_pixel(row, col, pixel_color);
 
