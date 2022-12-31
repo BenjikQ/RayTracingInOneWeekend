@@ -31,14 +31,14 @@
 
 [[nodiscard]] std::optional<double> hit_sphere(const Point3& center, double radius, const Ray& ray) {
     const Vec3 origin_to_center{ ray.origin - center };
-    const auto a = dot(ray.direction, ray.direction);
-    const auto b = 2 * dot(ray.direction, origin_to_center);
-    const auto c = dot(origin_to_center, origin_to_center) - radius * radius;
-    const auto discriminant = b * b - 4 * a * c;
+    const auto a = ray.direction.length_squared();
+    const auto half_b = dot(ray.direction, origin_to_center);
+    const auto c = origin_to_center.length_squared() - radius * radius;
+    const auto discriminant = half_b * half_b - a * c;
     if (discriminant < 0) {
         return {};
     }
-    return (-b - std::sqrt(discriminant)) / (2 * a);
+    return (-half_b - std::sqrt(discriminant)) / a;
 }
 
 [[nodiscard]] Color ray_color(const Ray& ray) {
@@ -69,7 +69,9 @@ int main() {
     constexpr Point3 origin{};
     constexpr Vec3 horizontal{ viewport_width, 0, 0 };
     constexpr Vec3 vertical{ 0, viewport_height, 0 };
-    constexpr Point3 lower_left_corner{ origin - horizontal / 2 - vertical / 2 - Vec3{ 0, 0, focal_length } };
+    constexpr Point3 lower_left_corner{
+        origin - horizontal / 2 - vertical / 2 - Vec3{ 0, 0, focal_length }
+    };
 
     auto rows = ranges::view::iota(0, image_height);
     auto columns = ranges::view::iota(0, image_width);
