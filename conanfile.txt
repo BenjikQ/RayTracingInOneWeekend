@@ -2,6 +2,7 @@
 range-v3/0.12.0
 stb/cci.20220909
 indicators/2.2
+pcg-cpp/cci.20210406
 
 [generators]
 CMakeDeps

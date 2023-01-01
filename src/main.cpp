@@ -7,7 +7,9 @@
 
 #include <range/v3/all.hpp>
 
+#include "camera.hpp"
 #include "image.hpp"
+#include "random.hpp"
 #include "ray.hpp"
 #include "sphere.hpp"
 #include "vec3.hpp"
@@ -47,39 +49,36 @@ int main() {
     constexpr double aspect_ratio{ 16.0 / 9 };
     constexpr std::int32_t image_width{ 400 };
     constexpr auto image_height = static_cast<std::int32_t>(image_width / aspect_ratio);
-
-    constexpr double viewport_height{ 2.0 };
-    constexpr double viewport_width{ aspect_ratio * viewport_height };
-    constexpr double focal_length{ 1.0 };
-
-    Image image{ image_width, image_height };
+    constexpr auto samples_per_pixel = 100;
 
     indicators::show_console_cursor(false);
     auto bar = create_progress_bar(image_height);
+
+    Image image{ image_width, image_height };
 
     World world{
         Sphere{ Point3{ 0, 0, -1 }, 0.5 },
         Sphere{ Point3{ 0, -100.5, -1 }, 100.0 }
     };
 
-    constexpr Point3 origin{};
-    constexpr Vec3 horizontal{ viewport_width, 0, 0 };
-    constexpr Vec3 vertical{ 0, viewport_height, 0 };
-    constexpr Point3 lower_left_corner{
-        origin - horizontal / 2 - vertical / 2 - Vec3{ 0, 0, focal_length }
-    };
+    Camera camera{};
 
     auto rows = ranges::view::iota(0, image_height);
     auto columns = ranges::view::iota(0, image_width);
+    auto samples = ranges::view::iota(0, samples_per_pixel);
     auto rng = ranges::view::cartesian_product(rows, columns);
 
-    for (auto&& [row, col] : rng) {
-        const double u{ static_cast<double>(col) / (image_width - 1) };
-        const double v{ static_cast<double>(image_height - row) / (image_height - 1) };
-        const Ray ray{ origin, lower_left_corner + u * horizontal + v * vertical - origin };
-        const Color pixel_color{ ray_color(ray, world) };
+    auto random_double = []() { return random(0.0, 1.0); };
 
-        image.set_pixel(row, col, pixel_color);
+    for (auto&& [row, col] : rng) {
+        Color pixel_color{};
+        for (auto&& _ : samples) {
+            const double u{ (static_cast<double>(col) + random_double()) / (image_width - 1) };
+            const double v{ (static_cast<double>(image_height - row) + random_double()) / (image_height - 1) };
+            const Ray ray{ camera.ray(u, v) };
+            pixel_color += ray_color(ray, world);
+        }
+        image.set_pixel(row, col, pixel_color, samples_per_pixel);
 
         if (col == 0) {
             bar.tick();

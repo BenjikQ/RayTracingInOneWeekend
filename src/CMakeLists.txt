@@ -1,6 +1,7 @@
-find_package(range-v3)
-find_package(stb)
-find_package(indicators)
+find_package(range-v3 REQUIRED)
+find_package(stb REQUIRED)
+find_package(indicators REQUIRED)
+find_package(pcg-cpp REQUIRED)
 
 add_library(raytracer
   vec3.hpp vec3.cpp
@@ -8,10 +9,13 @@ add_library(raytracer
   ray.cpp ray.hpp
   shape.cpp shape.hpp
   sphere.cpp sphere.hpp
-  world.cpp world.hpp)
+  world.cpp world.hpp
+  camera.cpp camera.hpp
+  random.cpp random.hpp)
 target_link_libraries(raytracer
   PRIVATE
-    stb::stb)
+    stb::stb
+    pcg-cpp::pcg-cpp)
 target_compile_features(raytracer PRIVATE cxx_std_20)
 
 add_executable(raytracer-bin main.cpp)

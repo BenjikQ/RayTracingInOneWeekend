@@ -16,7 +16,7 @@ class Image {
 public:
     Image(std::int32_t width, std::int32_t height);
 
-    void set_pixel(std::int32_t row, std::int32_t col, const Color& rgb) noexcept;
+    void set_pixel(std::int32_t row, std::int32_t col, const Color& rgb, int samples_per_pixel) noexcept;
     void save(std::string_view path) const;
 };
 

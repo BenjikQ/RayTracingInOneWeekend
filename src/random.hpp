@@ -1,0 +1,6 @@
+#ifndef RAYTRACINGINONEWEEKEND_RANDOM_HPP
+#define RAYTRACINGINONEWEEKEND_RANDOM_HPP
+
+[[nodiscard]] double random(double min, double max);
+
+#endif //RAYTRACINGINONEWEEKEND_RANDOM_HPP
