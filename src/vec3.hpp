@@ -42,6 +42,8 @@ struct Vec3 {
     [[nodiscard]] double length() const noexcept {
         return std::sqrt(length_squared());
     }
+
+    [[nodiscard]] static Vec3 random(double min, double max);
 };
 
 [[nodiscard]] constexpr Vec3 operator+(Vec3 lhs, const Vec3& rhs) noexcept {
@@ -71,6 +73,9 @@ struct Vec3 {
 [[nodiscard]] constexpr double dot(const Vec3& lhs, const Vec3& rhs) noexcept {
     return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z;
 }
+
+[[nodiscard]] Vec3 random_in_unit_sphere();
+[[nodiscard]] Vec3 random_in_hemisphere(const Vec3& norma);
 
 using Point3 = Vec3;
 using Color = Vec3;

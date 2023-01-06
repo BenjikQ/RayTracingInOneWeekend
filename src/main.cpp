@@ -5,8 +5,6 @@
 #include <indicators/cursor_control.hpp>
 #include <indicators/progress_bar.hpp>
 
-#include <range/v3/all.hpp>
-
 #include "camera.hpp"
 #include "image.hpp"
 #include "random.hpp"
@@ -33,11 +31,16 @@
     };
 }
 
-[[nodiscard]] Color ray_color(const Ray& ray, const World& world) {
+[[nodiscard]] Color ray_color(const Ray& ray, const World& world, int depth) {
     static constexpr auto infinity = std::numeric_limits<double>::infinity();
 
-    if (auto hit = world.hit(ray, 0.0, infinity)) {
-        return 0.5 * (hit->normal + Color{ 1, 1, 1 });
+    if (depth <= 0) {
+        return {};
+    }
+
+    if (auto hit = world.hit(ray, 0.001, infinity)) {
+        Point3 target{ hit->point + random_in_hemisphere(hit->normal) };
+        return 0.5 * ray_color(Ray{ hit->point, target - hit->point }, world, depth - 1);
     }
 
     const Vec3 unit_direction{ normalized(ray.direction) };
@@ -50,6 +53,7 @@ int main() {
     constexpr std::int32_t image_width{ 400 };
     constexpr auto image_height = static_cast<std::int32_t>(image_width / aspect_ratio);
     constexpr auto samples_per_pixel = 100;
+    constexpr auto max_depth = 50;
 
     indicators::show_console_cursor(false);
     auto bar = create_progress_bar(image_height);
@@ -63,30 +67,26 @@ int main() {
 
     Camera camera{};
 
-    auto rows = ranges::view::iota(0, image_height);
-    auto columns = ranges::view::iota(0, image_width);
-    auto samples = ranges::view::iota(0, samples_per_pixel);
-    auto rng = ranges::view::cartesian_product(rows, columns);
-
     auto random_double = []() { return random(0.0, 1.0); };
 
-    for (auto&& [row, col] : rng) {
-        Color pixel_color{};
-        for (auto&& _ : samples) {
-            const double u{ (static_cast<double>(col) + random_double()) / (image_width - 1) };
-            const double v{ (static_cast<double>(image_height - row) + random_double()) / (image_height - 1) };
-            const Ray ray{ camera.ray(u, v) };
-            pixel_color += ray_color(ray, world);
-        }
-        image.set_pixel(row, col, pixel_color, samples_per_pixel);
+    for (int row = image_height - 1; row >= 0; --row) {
+        for (int col = 0; col < image_width; ++col) {
+            Color pixel_color{};
+            for (int sample = 0; sample < samples_per_pixel; ++sample) {
+                const double u{ (static_cast<double>(col) + random_double()) / (image_width - 1) };
+                const double v{ (static_cast<double>(row) + random_double()) / (image_height - 1) };
+                const Ray ray{ camera.ray(u, v) };
+                pixel_color += ray_color(ray, world, max_depth);
+            }
+            image.set_pixel(row, col, pixel_color, samples_per_pixel);
 
-        if (col == 0) {
-            bar.tick();
+            if (col == 0) {
+                bar.tick();
+            }
         }
     }
 
     image.save("image.png");
-
     indicators::show_console_cursor(true);
 
     return 0;

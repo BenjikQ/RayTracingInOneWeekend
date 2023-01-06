@@ -8,7 +8,7 @@
 #include "vec3.hpp"
 
 class Image {
-    static constexpr std::int32_t pixel_size_in_bytes{ 3 };
+    static constexpr std::int32_t channels{ 3 };
     std::vector<std::uint8_t> pixels_;
     std::int32_t width_;
     std::int32_t height_;
