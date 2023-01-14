@@ -2,7 +2,10 @@
 
 #include <cmath>
 
-std::optional<Shape::Hit> Sphere::hit(const Ray& ray, double t_min, double t_max) const {
+#include "geometry/ray.hpp"
+#include "materials/material.hpp"
+
+std::optional<Hit> Sphere::hit(const Ray& ray, double t_min, double t_max) const {
     const Vec3 origin_to_center{ ray.origin - center_ };
     const auto a = ray.direction.length_squared();
     const auto half_b = dot(ray.direction, origin_to_center);
@@ -28,7 +31,7 @@ std::optional<Shape::Hit> Sphere::hit(const Ray& ray, double t_min, double t_max
     auto point = ray.at(root);
     auto outward_normal = (point - center_) / radius_;
     auto t = root;
-    Shape::Hit hit{ point, outward_normal, &material_, t };
+    Hit hit{ point, outward_normal, &material_, t };
     hit.set_face_normal(ray, outward_normal);
 
     return hit;

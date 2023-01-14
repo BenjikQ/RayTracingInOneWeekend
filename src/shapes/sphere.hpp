@@ -3,9 +3,12 @@
 
 #include <optional>
 
-#include "ray.hpp"
-#include "shape.hpp"
-#include "vec3.hpp"
+#include "geometry/hit.hpp"
+#include "geometry/point3.hpp"
+#include "shapes/shape.hpp"
+
+class Material;
+struct Ray;
 
 class Sphere : public Shape {
     Point3 center_{};

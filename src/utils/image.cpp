@@ -2,11 +2,14 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb_image_write.h>
 
-Image::Image(std::int32_t width, std::int32_t height)
+#include "utils/color.hpp"
+
+Image::Image(int width, int height)
     : pixels_(width * height * channels)
     , width_{ width }
     , height_{ height }
@@ -16,7 +19,7 @@ Image::Image(std::int32_t width, std::int32_t height)
     return static_cast<std::uint8_t>(256 * std::clamp(v, 0.0, 0.999));
 }
 
-void Image::set_pixel(std::int32_t row, std::int32_t col, const Color& rgb, int samples_per_pixel) noexcept {
+void Image::set_pixel(int row, int col, const Color& rgb, int samples_per_pixel) noexcept {
     auto [r, g, b] = rgb / samples_per_pixel;
 
     pixels_[channels * (width_ * row + col)] = convert(std::sqrt(r));

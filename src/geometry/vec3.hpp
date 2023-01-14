@@ -1,5 +1,5 @@
-#ifndef RAYTRACINGINONEWEEKEND_VEC3_HPP
-#define RAYTRACINGINONEWEEKEND_VEC3_HPP
+#ifndef RAYTRACINGINONEWEEKEND_GEOMETRY_VEC3_HPP
+#define RAYTRACINGINONEWEEKEND_GEOMETRY_VEC3_HPP
 
 #include <cmath>
 #include <cstdlib>
@@ -29,13 +29,6 @@ struct Vec3 {
         x *= t;
         y *= t;
         z *= t;
-        return *this;
-    }
-
-    constexpr Vec3& operator*=(const Vec3& other) noexcept {
-        x *= other.x;
-        y *= other.y;
-        z *= other.z;
         return *this;
     }
 
@@ -75,10 +68,6 @@ struct Vec3 {
     return v * t;
 }
 
-[[nodiscard]] constexpr Vec3 operator*(Vec3 lhs, const Vec3& rhs) noexcept {
-    return lhs *= rhs;
-}
-
 [[nodiscard]] constexpr Vec3 operator/(Vec3 v, double t) noexcept {
     return v /= t;
 }
@@ -96,9 +85,5 @@ struct Vec3 {
 }
 
 [[nodiscard]] Vec3 random_in_unit_sphere();
-[[nodiscard]] Vec3 random_in_hemisphere(const Vec3& norma);
 
-using Point3 = Vec3;
-using Color = Vec3;
-
-#endif //RAYTRACINGINONEWEEKEND_VEC3_HPP
+#endif //RAYTRACINGINONEWEEKEND_GEOMETRY_VEC3_HPP

@@ -3,6 +3,8 @@ project(RayTracingInOneWeekend
   VERSION 0.1.0
   LANGUAGES CXX)
 
+include(CheckIPOSupported)
+
 list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR})
 
 set(CMAKE_CXX_EXTENSIONS OFF)

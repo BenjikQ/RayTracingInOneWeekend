@@ -1,8 +1,9 @@
-#ifndef RAYTRACINGINONEWEEKEND_CAMERA_HPP
-#define RAYTRACINGINONEWEEKEND_CAMERA_HPP
+#ifndef RAYTRACINGINONEWEEKEND_CORE_CAMERA_HPP
+#define RAYTRACINGINONEWEEKEND_CORE_CAMERA_HPP
 
-#include "ray.hpp"
-#include "vec3.hpp"
+#include "geometry/point3.hpp"
+#include "geometry/ray.hpp"
+#include "geometry/vec3.hpp"
 
 class Camera {
     static constexpr auto aspect_ratio = 16.0 / 9;
@@ -23,4 +24,4 @@ public:
     }
 };
 
-#endif //RAYTRACINGINONEWEEKEND_CAMERA_HPP
+#endif //RAYTRACINGINONEWEEKEND_CORE_CAMERA_HPP

@@ -1,7 +1,6 @@
 [requires]
 stb/cci.20220909
 indicators/2.2
-pcg-cpp/cci.20210406
 
 [generators]
 CMakeDeps
