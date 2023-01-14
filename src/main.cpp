@@ -1,5 +1,6 @@
 #include <cstdint>
 #include <limits>
+#include <memory>
 #include <vector>
 
 #include <indicators/cursor_control.hpp>
@@ -7,6 +8,9 @@
 
 #include "camera.hpp"
 #include "image.hpp"
+#include "lambertian.hpp"
+#include "material.hpp"
+#include "metal.hpp"
 #include "random.hpp"
 #include "ray.hpp"
 #include "sphere.hpp"
@@ -39,8 +43,12 @@
     }
 
     if (auto hit = world.hit(ray, 0.001, infinity)) {
-        Point3 target{ hit->point + random_in_hemisphere(hit->normal) };
-        return 0.5 * ray_color(Ray{ hit->point, target - hit->point }, world, depth - 1);
+        Ray scattered;
+        Color attenuation;
+        if (hit->material->scatter(ray, *hit, attenuation, scattered)) {
+            return attenuation * ray_color(scattered, world, depth - 1);
+        }
+        return Color{};
     }
 
     const Vec3 unit_direction{ normalized(ray.direction) };
@@ -60,9 +68,16 @@ int main() {
 
     Image image{ image_width, image_height };
 
+    auto ground = std::make_unique<Lambertian>(Color{ 0.8, 0.8, 0.0 });
+    auto center = std::make_unique<Lambertian>(Color{ 0.7, 0.3, 0.3 });
+    auto left = std::make_unique<Metal>(Color{ 0.8, 0.8, 0.8 }, 0.3);
+    auto right = std::make_unique<Metal>(Color{ 0.8, 0.6, 0.2 }, 1.0);
+
     World world{
-        Sphere{ Point3{ 0, 0, -1 }, 0.5 },
-        Sphere{ Point3{ 0, -100.5, -1 }, 100.0 }
+        Sphere{ Point3{ 0, -100.5, 0 }, 100, *ground },
+        Sphere{ Point3{ 0, 0, -1 },     0.5, *center },
+        Sphere{ Point3{ -1, 0, -1 },    0.5, *left },
+        Sphere{ Point3{ 1, 0, -1 },     0.5, *right }
     };
 
     Camera camera{};

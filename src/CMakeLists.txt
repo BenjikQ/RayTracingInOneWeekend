@@ -10,7 +10,10 @@ add_library(raytracer
   sphere.cpp sphere.hpp
   world.cpp world.hpp
   camera.cpp camera.hpp
-  random.cpp random.hpp)
+  random.cpp random.hpp
+  material.cpp material.hpp
+  lambertian.cpp lambertian.hpp
+  metal.cpp metal.hpp)
 target_link_libraries(raytracer
   PRIVATE
     stb::stb

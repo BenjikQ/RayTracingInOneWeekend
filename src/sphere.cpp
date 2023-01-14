@@ -25,10 +25,10 @@ std::optional<Shape::Hit> Sphere::hit(const Ray& ray, double t_min, double t_max
         }
     }
 
-    const auto point = ray.at(root);
-    const auto outward_normal = (point - center_) / radius_;
-    const auto t = root;
-    Shape::Hit hit{ point, outward_normal, t };
+    auto point = ray.at(root);
+    auto outward_normal = (point - center_) / radius_;
+    auto t = root;
+    Shape::Hit hit{ point, outward_normal, &material_, t };
     hit.set_face_normal(ray, outward_normal);
 
     return hit;

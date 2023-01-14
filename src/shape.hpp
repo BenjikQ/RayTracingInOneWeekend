@@ -6,11 +6,14 @@
 #include "ray.hpp"
 #include "vec3.hpp"
 
+class Material;
+
 class Shape {
 public:
     struct Hit {
         Point3 point{};
         Vec3 normal{};
+        const Material* material;
         double t{};
         bool front_face{};
 

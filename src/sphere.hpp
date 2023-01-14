@@ -10,12 +10,13 @@
 class Sphere : public Shape {
     Point3 center_{};
     double radius_{};
+    const Material& material_;
 
 public:
-    Sphere() = default;
-    Sphere(const Point3& center, double radius)
+    Sphere(const Point3& center, double radius, const Material& material)
         : center_{ center }
         , radius_{ radius }
+        , material_{ material }
     {}
 
     [[nodiscard]] std::optional<Hit> hit(const Ray& ray, double t_min, double t_max) const override;
