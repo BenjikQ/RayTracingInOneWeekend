@@ -4,6 +4,7 @@
 #include "core/world.hpp"
 #include "geometry/point3.hpp"
 #include "geometry/ray.hpp"
+#include "materials/dielectric.hpp"
 #include "materials/lambertian.hpp"
 #include "materials/material.hpp"
 #include "materials/metal.hpp"
@@ -26,14 +27,15 @@ int main() {
     Image image{ image_width, image_height };
 
     auto ground = create_material<Lambertian>(Color{ 0.8, 0.8, 0.0 });
-    auto center = create_material<Lambertian>(Color{ 0.7, 0.3, 0.3 });
-    auto left = create_material<Metal>(Color{ 0.8, 0.8, 0.8 }, 0.3);
-    auto right = create_material<Metal>(Color{ 0.8, 0.6, 0.2 }, 1.0);
+    auto center = create_material<Lambertian>(Color{ 0.1, 0.2, 0.5 });
+    auto left = create_material<Dielectric>(1.5);
+    auto right = create_material<Metal>(Color{ 0.8, 0.6, 0.2 }, 0.0);
 
     World world{
         Sphere{ Point3{ 0, -100.5, 0 }, 100, *ground },
         Sphere{ Point3{ 0, 0, -1 },     0.5, *center },
         Sphere{ Point3{ -1, 0, -1 },    0.5, *left },
+        Sphere{ Point3{ -1, 0, -1 },   -0.4, *left },
         Sphere{ Point3{ 1, 0, -1 },     0.5, *right }
     };
 
@@ -51,11 +53,8 @@ int main() {
                 pixel_color += world.ray_color(ray, max_depth);
             }
             image.set_pixel(row, col, pixel_color, samples_per_pixel);
-
-            if (col == 0) {
-                bar.tick();
-            }
         }
+        bar.tick();
     }
 
     image.save("image.png");

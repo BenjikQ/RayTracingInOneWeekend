@@ -11,7 +11,7 @@ https://raytracing.github.io/books/RayTracingInOneWeekend.html
 - [x] 7\. Antialiasing
 - [x] 8\. Diffuse Materials
 - [x] 9\. Metal
-- [ ] 10\. Dielectrics
+- [x] 10\. Dielectrics
 - [ ] 11\. Positionable Camera
 - [ ] 12\. Defocus Blur
 - [ ] 13\. Where Next?

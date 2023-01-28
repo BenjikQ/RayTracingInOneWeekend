@@ -84,6 +84,8 @@ struct Vec3 {
     return vec - 2 * dot(vec, normal) * normal;
 }
 
+[[nodiscard]] Vec3 refract(const Vec3& uv, const Vec3& normal, double coefficient);
+
 [[nodiscard]] Vec3 random_in_unit_sphere();
 
 #endif //RAYTRACINGINONEWEEKEND_GEOMETRY_VEC3_HPP

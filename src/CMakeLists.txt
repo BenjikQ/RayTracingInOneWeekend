@@ -10,6 +10,7 @@ add_library(raytracer
   geometry/ray.cpp geometry/ray.hpp
   geometry/vec3.cpp geometry/vec3.hpp
 
+  materials/dielectric.cpp materials/dielectric.hpp
   materials/lambertian.cpp materials/lambertian.hpp
   materials/material.cpp materials/material.hpp
   materials/metal.cpp materials/metal.hpp
