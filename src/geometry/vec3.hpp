@@ -80,6 +80,12 @@ struct Vec3 {
     return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z;
 }
 
+[[nodiscard]] constexpr Vec3 cross(const Vec3& lhs, const Vec3& rhs) noexcept {
+    return { lhs.y * rhs.z - lhs.z * rhs.y,
+             lhs.z * rhs.x - lhs.x * rhs.z,
+             lhs.x * rhs.y - lhs.y * rhs.x };
+}
+
 [[nodiscard]] constexpr Vec3 reflect(const Vec3& vec, const Vec3& normal) noexcept {
     return vec - 2 * dot(vec, normal) * normal;
 }
