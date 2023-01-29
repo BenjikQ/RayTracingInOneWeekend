@@ -22,7 +22,7 @@ std::optional<Hit> World::hit(const Ray& ray, double t_min, double t_max) const 
     return hit_anything ? std::optional(latest_hit) : std::nullopt;
 }
 
-Color World::ray_color(const Ray& ray, int depth) {
+Color World::ray_color(const Ray& ray, int depth) const {
     static constexpr auto infinity = std::numeric_limits<double>::infinity();
 
     if (depth <= 0) {

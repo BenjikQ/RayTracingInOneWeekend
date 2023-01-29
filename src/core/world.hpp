@@ -28,7 +28,12 @@ public:
         (shapes_.push_back(std::make_unique<Ts>(shapes)), ...);
     }
 
-    [[nodiscard]] Color ray_color(const Ray& ray, int depth);
+    template<typename T>
+    void add(const T& shape) {
+        shapes_.push_back(std::make_unique<T>(shape));
+    }
+
+    [[nodiscard]] Color ray_color(const Ray& ray, int depth) const;
 };
 
 #endif //RAYTRACINGINONEWEEKEND_CORE_WORLD_HPP

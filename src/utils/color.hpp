@@ -31,6 +31,8 @@ struct Color {
         b /= t;
         return *this;
     }
+
+    [[nodiscard]] static Color random(double min, double max);
 };
 
 [[nodiscard]] constexpr Color operator+(Color lhs, const Color& rhs) noexcept {

@@ -14,7 +14,7 @@ https://raytracing.github.io/books/RayTracingInOneWeekend.html
 - [x] 10\. Dielectrics
 - [x] 11\. Positionable Camera
 - [x] 12\. Defocus Blur
-- [ ] 13\. Where Next?
+- [x] 13\. Where Next?
 
 ## Requirements
 - C++ compiler supporting C++20 standard
@@ -24,10 +24,11 @@ https://raytracing.github.io/books/RayTracingInOneWeekend.html
 ## Usage
 ```bash
 git clone https://github.com/BenjikQ/RayTracingInOneWeekend.git
+cd RayTracingInOneWeekend
 mkdir build
 cd build
 conan install .. -pr:h <profile> -pr:b <profile> --build missing
-cmake -DCMAKE_BUILD_TYPE=Release -S .. -B .
-cmake --build
-./raytracer
+cmake -DCMAKE_BUILD_TYPE=Release -S .. -B . -G "<generator>" -DCMAKE_C_COMPILER=<compiler> -DCMAKE_CXX_COMPILER=<compiler>
+cmake --build .
+./src/raytracer
 ```
