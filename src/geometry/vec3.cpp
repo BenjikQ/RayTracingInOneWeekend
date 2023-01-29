@@ -22,3 +22,11 @@ Vec3 random_in_unit_sphere() {
         return p;
     }
 }
+
+Vec3 random_in_unit_disk() {
+    while (true) {
+        auto p = Vec3{ ::random(-1, 1), ::random(-1, 1), 0 };
+        if (p.length_squared() >= 1) continue;
+        return p;
+    }
+}

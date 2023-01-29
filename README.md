@@ -13,7 +13,7 @@ https://raytracing.github.io/books/RayTracingInOneWeekend.html
 - [x] 9\. Metal
 - [x] 10\. Dielectrics
 - [x] 11\. Positionable Camera
-- [ ] 12\. Defocus Blur
+- [x] 12\. Defocus Blur
 - [ ] 13\. Where Next?
 
 ## Requirements

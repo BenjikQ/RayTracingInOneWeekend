@@ -94,4 +94,6 @@ struct Vec3 {
 
 [[nodiscard]] Vec3 random_in_unit_sphere();
 
+[[nodiscard]] Vec3 random_in_unit_disk();
+
 #endif //RAYTRACINGINONEWEEKEND_GEOMETRY_VEC3_HPP

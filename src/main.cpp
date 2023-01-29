@@ -39,10 +39,12 @@ int main() {
         Sphere{ Point3{ 1, 0, -1 },     0.5, *right }
     };
 
-    constexpr Point3 look_from{ -2, 2, 1 };
+    constexpr Point3 look_from{ 3, 3, 2 };
     constexpr Point3 look_at{ 0, 0, -1 };
     constexpr Vec3 up{ 0, 1, 0 };
-    Camera camera{ look_from, look_at, up, 20, aspect_ratio };
+    const double distance_to_focus{ (look_from - look_at).length() };
+    constexpr double aperture{ 2.0 };
+    Camera camera{ look_from, look_at, up, 20, aspect_ratio, aperture, distance_to_focus };
 
     auto random_double = []() { return random(0.0, 1.0); };
 
