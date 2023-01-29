@@ -17,6 +17,12 @@
 #include "utils/progress_bar.hpp"
 #include "utils/random.hpp"
 
+#if defined(_OPENMP)
+#pragma omp declare reduction(color_add : Color : \
+                              omp_out += omp_in) \
+                    initializer(omp_priv = Color{})
+#endif
+
 [[nodiscard]] static auto random_double() noexcept {
     return random(0.0, 1.0);
 }
@@ -87,7 +93,12 @@ int main() {
     for (int row = image_height - 1; row >= 0; --row) {
         for (int col = 0; col < image_width; ++col) {
             Color pixel_color{};
-            for (int sample = 0; sample < samples_per_pixel; ++sample) {
+            int sample;
+
+#if defined(_OPENMP)
+#pragma omp parallel for private(sample) reduction(color_add : pixel_color)
+#endif
+            for (sample = 0; sample < samples_per_pixel; ++sample) {
                 const double u{ (static_cast<double>(col) + random_double()) / (image_width - 1) };
                 const double v{ (static_cast<double>(row) + random_double()) / (image_height - 1) };
                 const Ray ray{ camera.ray(u, v) };

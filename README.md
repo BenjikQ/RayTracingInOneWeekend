@@ -1,5 +1,7 @@
 # Ray Tracing in One Weekend
-https://raytracing.github.io/books/RayTracingInOneWeekend.html
+
+Code written in C++ based on \
+https://raytracing.github.io/books/RayTracingInOneWeekend.html.
 
 ## Completed
 - [x] 1\. Overview
@@ -20,6 +22,7 @@ https://raytracing.github.io/books/RayTracingInOneWeekend.html
 - C++ compiler supporting C++20 standard
 - CMake >= 3.24
 - Conan >= 1.54
+- OpenMP >= 4.0 (optional)
 
 ## Usage
 ```bash

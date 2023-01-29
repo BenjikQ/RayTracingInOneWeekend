@@ -1,5 +1,6 @@
 find_package(stb REQUIRED)
 find_package(indicators REQUIRED)
+find_package(OpenMP 4.0)
 
 add_library(raytracer
   core/camera.cpp core/camera.hpp
@@ -46,3 +47,8 @@ target_compile_features(raytracer-bin PRIVATE cxx_std_20)
 set_target_properties(raytracer-bin
   PROPERTIES
     OUTPUT_NAME raytracer)
+
+if(OpenMP_CXX_FOUND)
+  message(STATUS "OpenMP supported")
+  target_link_libraries(raytracer-bin PRIVATE OpenMP::OpenMP_CXX)
+endif()
