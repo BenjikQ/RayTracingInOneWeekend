@@ -1,7 +1,7 @@
 # Ray Tracing in One Weekend
 https://raytracing.github.io/books/RayTracingInOneWeekend.html
 
-## Completed:
+## Completed
 - [x] 1\. Overview
 - [x] 2\. Output an image
 - [x] 3\. The vec3 class
@@ -32,3 +32,6 @@ cmake -DCMAKE_BUILD_TYPE=Release -S .. -B . -G "<generator>" -DCMAKE_C_COMPILER=
 cmake --build .
 ./src/raytracer
 ```
+
+## Result
+![Image](images/image.png)
