@@ -1,8 +1,13 @@
+#include <iostream>
 #include <memory>
+#include <stdexcept>
 #include <vector>
+
+#include <argparse/argparse.hpp>
 
 #include <indicators/cursor_control.hpp>
 
+#include "config.hpp"
 #include "core/camera.hpp"
 #include "core/world.hpp"
 #include "geometry/point3.hpp"
@@ -69,12 +74,38 @@
     return world;
 }
 
-int main() {
-    constexpr double aspect_ratio{ 3.0 / 2 };
-    constexpr int image_width{ 1200 };
-    constexpr auto image_height = static_cast<int>(image_width / aspect_ratio);
-    constexpr auto samples_per_pixel = 500;
-    constexpr auto max_depth = 50;
+[[nodiscard]] static argparse::ArgumentParser setup_program_arguments() {
+    static argparse::ArgumentParser program{ "raytracer", PROJECT_VERSION };
+    program.add_argument("--width")
+        .help("width of the output image")
+        .default_value(800)
+        .scan<'i', int>();
+    program.add_argument("--height")
+        .help("height of the output image")
+        .default_value(600)
+        .scan<'i', int>();
+    program.add_argument("--samples")
+        .help("samples per pixel")
+        .default_value(100)
+        .scan<'i', int>();
+
+    return program;
+}
+
+int main(int argc, char* argv[]) {
+    auto program = setup_program_arguments();
+    try {
+        program.parse_args(argc, argv);
+    } catch (const std::runtime_error& e) {
+        std::cerr << e.what() << '\n';
+        std::cerr << program;
+        return 1;
+    }
+
+    const auto image_width = program.get<int>("--width");
+    const auto image_height = program.get<int>("--height");
+    const auto aspect_ratio = static_cast<double>(image_width) / image_height;
+    const auto samples_per_pixel = program.get<int>("--samples");
 
     indicators::show_console_cursor(false);
     auto bar = create_progress_bar(image_height);
@@ -102,7 +133,7 @@ int main() {
                 const double u{ (static_cast<double>(col) + random_double()) / (image_width - 1) };
                 const double v{ (static_cast<double>(row) + random_double()) / (image_height - 1) };
                 const Ray ray{ camera.ray(u, v) };
-                pixel_color += world.ray_color(ray, max_depth);
+                pixel_color += world.ray_color(ray, 50);
             }
             image.set_pixel(row, col, pixel_color, samples_per_pixel);
         }

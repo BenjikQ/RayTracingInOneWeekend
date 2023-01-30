@@ -1,5 +1,6 @@
 find_package(stb REQUIRED)
 find_package(indicators REQUIRED)
+find_package(argparse REQUIRED)
 find_package(OpenMP 4.0)
 
 add_library(raytracer
@@ -42,11 +43,13 @@ add_executable(raytracer-bin
 target_link_libraries(raytracer-bin
   PRIVATE
     raytracer
-    indicators::indicators)
+    indicators::indicators
+    argparse::argparse)
 target_compile_features(raytracer-bin PRIVATE cxx_std_20)
 set_target_properties(raytracer-bin
   PROPERTIES
     OUTPUT_NAME raytracer)
+target_include_directories(raytracer-bin PRIVATE ${CMAKE_BINARY_DIR}/configured_files)
 
 if(OpenMP_CXX_FOUND)
   message(STATUS "OpenMP supported")

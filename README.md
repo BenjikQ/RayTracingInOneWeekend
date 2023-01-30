@@ -33,7 +33,7 @@ cd build
 conan install .. -pr:h <profile> -pr:b <profile> --build missing
 cmake -DCMAKE_BUILD_TYPE=Release -S .. -B . -G "<generator>" -DCMAKE_C_COMPILER=<compiler> -DCMAKE_CXX_COMPILER=<compiler>
 cmake --build .
-./src/raytracer
+./src/raytracer --width <width> --height <height> --samples <samples>
 ```
 
 ## Result
