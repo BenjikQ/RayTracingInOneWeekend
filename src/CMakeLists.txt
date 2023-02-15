@@ -1,7 +1,10 @@
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+
 find_package(stb REQUIRED)
 find_package(indicators REQUIRED)
 find_package(argparse REQUIRED)
 find_package(OpenMP 4.0)
+find_package(Threads REQUIRED)
 
 add_library(raytracer
   core/camera.cpp core/camera.hpp
@@ -44,7 +47,8 @@ target_link_libraries(raytracer-bin
   PRIVATE
     raytracer
     indicators::indicators
-    argparse::argparse)
+    argparse::argparse
+    Threads::Threads)
 target_compile_features(raytracer-bin PRIVATE cxx_std_20)
 set_target_properties(raytracer-bin
   PROPERTIES
